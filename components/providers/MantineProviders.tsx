@@ -1,6 +1,10 @@
 "use client";
 
-import { createTheme, MantineProvider } from "@mantine/core";
+import {
+  createTheme,
+  localStorageColorSchemeManager,
+  MantineProvider,
+} from "@mantine/core";
 import { Toaster } from "@/components/ui/Toast";
 
 const theme = createTheme({
@@ -16,7 +20,13 @@ const theme = createTheme({
 
 export function MantineProviders({ children }: { children: React.ReactNode }) {
   return (
-    <MantineProvider theme={theme} defaultColorScheme="auto">
+    <MantineProvider
+      theme={theme}
+      defaultColorScheme="light"
+      colorSchemeManager={localStorageColorSchemeManager({
+        key: "task-manager-color-scheme",
+      })}
+    >
       <Toaster />
       {children}
     </MantineProvider>

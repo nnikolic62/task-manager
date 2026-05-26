@@ -1,6 +1,6 @@
-import { jwtVerify } from "jose";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { verifyAccessToken } from "@/lib/auth";
 
 const publicPaths = ["/login", "/register", "/api/auth/refresh"];
 
@@ -12,18 +12,12 @@ function isPublicPath(pathname: string) {
 
 async function hasValidAccessToken(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken")?.value;
-  const secret = process.env.JWT_SECRET;
-
-  if (!accessToken || !secret) {
+  if (!accessToken) {
     return false;
   }
 
-  try {
-    await jwtVerify(accessToken, new TextEncoder().encode(secret));
-    return true;
-  } catch {
-    return false;
-  }
+  const userId = await verifyAccessToken(accessToken);
+  return userId !== null;
 }
 
 export async function middleware(request: NextRequest) {

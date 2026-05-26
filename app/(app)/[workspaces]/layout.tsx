@@ -1,0 +1,44 @@
+import { redirect } from "next/navigation";
+
+import { getUserWorkspaces } from "@/actions/workspaces";
+import { AppShell } from "@/components/layout/AppShell";
+import { getSession } from "@/lib/session";
+
+type WorkspaceLayoutProps = {
+  children: React.ReactNode;
+  params: Promise<{ workspaces: string }>;
+};
+
+export default async function WorkspaceLayout({
+  children,
+  params,
+}: WorkspaceLayoutProps) {
+  const { workspaces: workspaceSlug } = await params;
+  const session = await getSession();
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  const workspaces = await getUserWorkspaces(session.id);
+
+  if (workspaces.length === 0) {
+    redirect("/");
+  }
+
+  const activeWorkspace = workspaces.find((w) => w.slug === workspaceSlug);
+
+  if (!activeWorkspace) {
+    redirect(`/${workspaces[0].slug}`);
+  }
+
+  return (
+    <AppShell
+      user={session}
+      workspaces={workspaces}
+      activeWorkspaceSlug={activeWorkspace.slug}
+    >
+      {children}
+    </AppShell>
+  );
+}

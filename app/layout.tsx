@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ColorSchemeScript } from "@mantine/core";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import { MantineProviders } from "@/components/providers/MantineProviders";
@@ -28,8 +29,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full`}
     >
+      <head>
+        <ColorSchemeScript
+          defaultColorScheme="light"
+          localStorageKey="task-manager-color-scheme"
+        />
+      </head>
       <body className="flex min-h-full flex-col">
         <MantineProviders>{children}</MantineProviders>
       </body>

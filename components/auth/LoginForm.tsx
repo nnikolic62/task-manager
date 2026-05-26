@@ -37,19 +37,19 @@ export function LoginForm() {
         setErrors({});
         setIsSubmitting(true);
 
-        const user = await loginUser({
+        const loginResult = await loginUser({
             email: result.data.email,
             password: result.data.password,
         });
 
-        if (!user) {
+        if (!loginResult) {
             toast.error("Invalid email or password");
             setIsSubmitting(false);
             return;
         }
 
-        toast.success(`Welcome back, ${user.name}`);
-        redirect("/");
+        toast.success(`Welcome back, ${loginResult.user.name}`);
+        redirect(loginResult.redirectTo);
     }
 
     return (

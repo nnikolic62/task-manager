@@ -1,15 +1,17 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { and, eq, isNull } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 import { db } from "@/db";
-import { refreshTokens, users } from "@/db/schema";
+import { refreshTokens, users, workspaces, workspaceMembers } from "@/db/schema";
 import { verifyAccessToken } from "@/lib/auth";
 import { clearAuthCookies } from "@/lib/cookies";
 import { hashPassword, verifyPassword } from "@/lib/password";
 import { issueSession } from "@/lib/session";
+import { getUserWorkspaces } from "./workspaces";
 
 export async function registerUser(data: {
   name: string;
@@ -18,10 +20,41 @@ export async function registerUser(data: {
 }) {
   const passwordHash = await hashPassword(data.password);
 
-  await db.insert(users).values({
-    email: data.email,
-    name: data.name,
-    passwordHash,
+  return await db.transaction(async (tx) => {
+    const [user] = await tx
+      .insert(users)
+      .values({
+        email: data.email,
+        name: data.name,
+        passwordHash,
+      })
+      .returning();
+
+    const slug = data.name
+      .toLowerCase()
+      .replace(/ /g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+
+    const [workspace] = await tx
+      .insert(workspaces)
+      .values({
+        name: data.name,
+        slug,
+        ownerId: user.id,
+        plan: "free",
+      })
+      .returning();
+    
+    await tx.insert(workspaceMembers).values({
+      workspaceId: workspace.id,
+      userId: user.id,
+      role: "owner",
+    });
+
+    return {
+      user,
+      workspace,
+    };
   });
 }
 
@@ -44,11 +77,18 @@ export async function loginUser(data: { email: string; password: string }) {
 
   await issueSession(user.id);
 
+  const workspaces = await getUserWorkspaces(user.id);
+  const redirectTo =
+    workspaces.length > 0 ? `/${workspaces[0].slug}` : "/";
+
   return {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    avatarUrl: user.avatarUrl,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      avatarUrl: user.avatarUrl,
+    },
+    redirectTo,
   };
 }
 
@@ -87,4 +127,9 @@ export async function logoutUser() {
   }
 
   await clearAuthCookies();
+}
+
+export async function logoutAndRedirect() {
+  await logoutUser();
+  redirect("/login");
 }
