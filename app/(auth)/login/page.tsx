@@ -1,59 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type SubmitEvent } from "react";
+import { useActionState, useEffect, useState } from "react";
 
+import { loginAction, LoginActionState } from "@/actions/auth";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { LockIcon, MailIcon } from "@/components/auth/icons";
 import { TextField } from "@/components/ui/TextField";
 import { toast } from "@/components/ui/Toast";
-import { loginUser } from "@/actions/auth";
-import { loginUserSchema, type LoginUser } from "@/schemas/user.schema";
-import { redirect } from "next/navigation";
-
-type LoginErrors = Partial<Record<keyof LoginUser, string>>;
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<LoginErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [state, formAction, pending] =
+    useActionState<LoginActionState, FormData>(loginAction, {fieldErrors: {}});
 
-  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const result = loginUserSchema.safeParse({ email, password });
-
-    if (!result.success) {
-      const fieldErrors: Partial<Record<keyof LoginUser, string>> = {};
-      for (const issues of result.error.issues) {
-        const path = issues.path[0] as keyof LoginUser;
-        if (path && !fieldErrors[path]) {
-          fieldErrors[path] = issues.message;
-        }
-      }
-      setErrors(fieldErrors);
-      return;
+  useEffect(() => {
+    if (state?.toast) {
+      toast.error(state.toast);
     }
-
-    setErrors({});
-    setIsSubmitting(true);
-
-    const loginResult = await loginUser({
-      email: result.data.email,
-      password: result.data.password,
-    });
-
-    if (!loginResult) {
-      toast.error("Invalid email or password");
-      setIsSubmitting(false);
-      return;
-    }
-
-    toast.success(`Welcome back, ${loginResult.user.name}`);
-    redirect(loginResult.redirectTo);
-  }
+  }, [state]);
 
   return (
     <AuthShell
@@ -63,7 +28,7 @@ export default function LoginPage() {
       footerHref="/register"
       footerLinkText="Create one"
     >
-      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      <form action={formAction} className="space-y-5" noValidate>
         <TextField
           label="Email"
           name="email"
@@ -71,9 +36,7 @@ export default function LoginPage() {
           placeholder="you@example.com"
           autoComplete="email"
           required
-          value={email}
-          onChange={(event) => setEmail(event.currentTarget.value)}
-          error={errors.email}
+          error={state?.fieldErrors?.email}
           leftSection={<MailIcon />}
         />
 
@@ -85,9 +48,7 @@ export default function LoginPage() {
             placeholder="••••••••"
             autoComplete="current-password"
             required
-            value={password}
-            onChange={(event) => setPassword(event.currentTarget.value)}
-            error={errors.password}
+            error={state?.fieldErrors?.password}
             leftSection={<LockIcon />}
             rightSection={
               <button
@@ -113,10 +74,10 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={pending}
           className="h-11 w-full rounded-lg bg-primary text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isSubmitting ? "Signing in…" : "Sign in"}
+          {pending ? "Signing in…" : "Sign in"}
         </button>
       </form>
     </AuthShell>

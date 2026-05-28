@@ -11,7 +11,54 @@ import { verifyAccessToken } from "@/lib/auth";
 import { clearAuthCookies } from "@/lib/cookies";
 import { hashPassword, verifyPassword } from "@/lib/password";
 import { issueSession } from "@/lib/session";
+import { loginUserSchema } from "@/schemas/user.schema";
+
 import { getUserWorkspaces } from "./workspaces";
+
+export type LoginActionState = {
+  fieldErrors?: Partial<Record<"email" | "password", string>>;
+  toast?: string;
+};
+
+function zodFieldErrors(
+  issues: { path: PropertyKey[]; message: string }[],
+): Partial<Record<"email" | "password", string>> {
+  const fieldErrors: Partial<Record<"email" | "password", string>> = {};
+
+  for (const issue of issues) {
+    const field = issue.path[0];
+
+    if (field === "email" || field === "password") {
+      if (!fieldErrors[field]) {
+        fieldErrors[field] = issue.message;
+      }
+    }
+  }
+
+  return fieldErrors;
+}
+
+export async function loginAction(
+  _prev: LoginActionState | null,
+  formData: FormData,
+): Promise<LoginActionState> {
+  const parsed = loginUserSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+
+  if (!parsed.success) {
+    return { fieldErrors: zodFieldErrors(parsed.error.issues) };
+  }
+
+  const result = await loginUser(parsed.data);
+
+  if (!result) {
+    return { toast: "Invalid email or password" };
+  }
+
+  redirect(result.redirectTo);
+}
 
 export async function registerUser(data: {
   name: string;
