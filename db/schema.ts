@@ -8,6 +8,7 @@ import {
     jsonb,
     bigint,
     real,
+    integer,
   } from "drizzle-orm/pg-core";
   
   //
@@ -129,6 +130,10 @@ import {
     status: projectStatusEnum("status").default("active"),
   
     createdBy: uuid("created_by").references(() => users.id),
+
+    dueDate: timestamp("due_date", {
+      withTimezone: true,
+    }),
   });
   
   //
@@ -290,3 +295,14 @@ import {
       withTimezone: true,
     }).defaultNow(),
   });
+
+  export const jobs = pgTable('jobs', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    type: text('type').notNull(),           // "send_email"
+    payload: jsonb('payload').notNull(),    // { to, subject, html }
+    status: text('status').notNull().default('pending'),  // pending, processing, done, failed
+    attempts: integer('attempts').notNull().default(0),
+    lastError: text('last_error'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+    processedAt: timestamp('processed_at', { withTimezone: true }),
+  })

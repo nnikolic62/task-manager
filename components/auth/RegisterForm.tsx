@@ -43,13 +43,35 @@ export function RegisterForm() {
       setErrors({});
       setIsSubmitting(true);
 
-      await registerUser({
-        name: result.data.name,
-        email: result.data.email,
-        password: result.data.password,
-      });
-      toast.success("Account created successfully");
-      redirect("/login");
+      let created = false;
+
+      try {
+        const registerResult = await registerUser({
+          name: result.data.name,
+          email: result.data.email,
+          password: result.data.password,
+        });
+
+        if (!registerResult.ok) {
+          toast.error(
+            registerResult.toast ??
+              "An error occurred while creating your account",
+          );
+          return;
+        }
+
+        created = true;
+      } catch (error) {
+        toast.error("Something went wrong. Please try again.");
+        console.error(error);
+      } finally {
+        setIsSubmitting(false);
+      }
+
+      if (created) {
+        toast.success("Account created successfully");
+        redirect("/login");
+      }
     }
     return (
         <form onSubmit={handleSubmit} className="space-y-5" noValidate>

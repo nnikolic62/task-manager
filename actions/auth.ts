@@ -11,6 +11,7 @@ import { verifyAccessToken } from "@/lib/auth";
 import { clearAuthCookies } from "@/lib/cookies";
 import { hashPassword, verifyPassword } from "@/lib/password";
 import { issueSession } from "@/lib/session";
+import { emailExists } from "@/lib/users";
 import { loginUserSchema } from "@/schemas/user.schema";
 
 import { getUserWorkspaces } from "./workspaces";
@@ -60,14 +61,25 @@ export async function loginAction(
   redirect(result.redirectTo);
 }
 
+export type RegisterResult =
+  | { ok: true }
+  | { ok: false; toast?: string };
+
 export async function registerUser(data: {
   name: string;
   email: string;
   password: string;
-}) {
+}): Promise<RegisterResult> {
+  if (await emailExists(data.email)) {
+    return {
+      ok: false,
+      toast: "This email is already in use",
+    };
+  }
+
   const passwordHash = await hashPassword(data.password);
 
-  return await db.transaction(async (tx) => {
+  await db.transaction(async (tx) => {
     const [user] = await tx
       .insert(users)
       .values({
@@ -77,10 +89,32 @@ export async function registerUser(data: {
       })
       .returning();
 
-    const slug = data.name
+    let baseSlug = data.name
       .toLowerCase()
       .replace(/ /g, "-")
       .replace(/[^a-z0-9-]/g, "");
+
+    if (!baseSlug) {
+      baseSlug = "workspace";
+    }
+
+    let slug = baseSlug;
+    let suffix = 0;
+
+    while (true) {
+      const [existing] = await tx
+        .select({ id: workspaces.id })
+        .from(workspaces)
+        .where(eq(workspaces.slug, slug))
+        .limit(1);
+
+      if (!existing) {
+        break;
+      }
+
+      suffix += 1;
+      slug = `${baseSlug}-${suffix}`;
+    }
 
     const [workspace] = await tx
       .insert(workspaces)
@@ -91,18 +125,15 @@ export async function registerUser(data: {
         plan: "free",
       })
       .returning();
-    
+
     await tx.insert(workspaceMembers).values({
       workspaceId: workspace.id,
       userId: user.id,
       role: "owner",
     });
-
-    return {
-      user,
-      workspace,
-    };
   });
+
+  return { ok: true };
 }
 
 export async function loginUser(data: { email: string; password: string }) {

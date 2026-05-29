@@ -5,6 +5,7 @@ import {
   localStorageColorSchemeManager,
   MantineProvider,
 } from "@mantine/core";
+import { DatesProvider } from "@mantine/dates";
 import { Toaster } from "@/components/ui/Toast";
 
 const theme = createTheme({
@@ -27,8 +28,12 @@ export function MantineProviders({ children }: { children: React.ReactNode }) {
         key: "task-manager-color-scheme",
       })}
     >
-      <Toaster />
-      {children}
+      <DatesProvider settings={{ consistentWeeks: true }}>
+        <div className="flex min-h-svh flex-1 flex-col">
+          <Toaster />
+          {children}
+        </div>
+      </DatesProvider>
     </MantineProvider>
   );
 }

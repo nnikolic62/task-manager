@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { getUserWorkspaces } from "@/actions/workspaces";
 import { AppShell } from "@/components/layout/AppShell";
+import { WorkspaceContent } from "@/components/layout/WorkspaceContent";
 import { getSession } from "@/lib/session";
 
 type WorkspaceLayoutProps = {
@@ -38,7 +39,7 @@ export default async function WorkspaceLayout({
       workspaces={workspaces}
       activeWorkspaceSlug={activeWorkspace.slug}
     >
-      {children}
+      <WorkspaceContent>{children}</WorkspaceContent>
     </AppShell>
   );
 }

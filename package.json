@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "worker": "tsx workers/emailWorker.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -11,9 +12,11 @@
   },
   "dependencies": {
     "@mantine/core": "^9.2.1",
+    "@mantine/dates": "^9.2.1",
     "@mantine/hooks": "^9.2.1",
     "@mantine/notifications": "^9.2.1",
     "bcryptjs": "^3.0.3",
+    "dayjs": "^1.11.21",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "jose": "^6.2.3",
@@ -21,6 +24,7 @@
     "pg": "^8.21.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "resend": "^6.12.4",
     "zod": "^4.4.3"
   },
   "devDependencies": {

@@ -24,7 +24,7 @@ export function AppShell({
   const [menuOpened, { toggle, close }] = useDisclosure(false);
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
       <AppHeader
         user={user}
         menuOpened={menuOpened}
@@ -37,7 +37,7 @@ export function AppShell({
         workspaces={workspaces}
         activeWorkspaceSlug={activeWorkspaceSlug}
       />
-      <main className="flex flex-1 flex-col">{children}</main>
-    </>
+      <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+    </div>
   );
 }

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { asc, eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { workspaceMembers, workspaces } from "@/db/schema";
+import { jobs, workspaceMembers, workspaces } from "@/db/schema";
 import { getSession } from "@/lib/session";
 
 export type UserWorkspace = {
@@ -61,6 +61,15 @@ export async function createWorkspace(
       workspaceId: row.id,
       userId: session.id,
       role: "owner",
+    });
+
+    await tx.insert(jobs).values({
+      type: "send_email",
+      payload: {
+        to: session.email,
+        subject: "New workspace created",
+        html: `<h1>Welcome to the workspace ${name}</h1>`,
+      },
     });
 
     return row;
