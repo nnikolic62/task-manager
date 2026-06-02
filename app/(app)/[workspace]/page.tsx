@@ -7,7 +7,7 @@ import { getWorkspaceBySlug } from "@/lib/workspaces";
 import { redirect } from "next/navigation";
 
 type WorkspaceHomePageProps = {
-  params: Promise<{ workspaces: string }>;
+  params: Promise<{ workspace: string }>;
 };
 
 export default async function WorkspaceHomePage({
@@ -18,7 +18,7 @@ export default async function WorkspaceHomePage({
     redirect("/login");
   }
 
-  const { workspaces: workspaceSlug } = await params;
+  const { workspace: workspaceSlug } = await params;
   const workspace = await getWorkspaceBySlug(workspaceSlug);
 
   if (!workspace) {
@@ -88,6 +88,7 @@ export default async function WorkspaceHomePage({
                 status={project.status}
                 taskCount={project.taskCount}
                 progressPercent={project.progressPercent}
+                href={`/${workspace.slug}/${project.slug}`}
               />
             ))}
           </div>

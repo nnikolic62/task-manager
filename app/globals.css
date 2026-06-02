@@ -275,6 +275,10 @@ html[data-mantine-color-scheme="dark"] {
     @apply text-foreground no-underline hover:no-underline hover:opacity-80;
   }
 
+  a.project-card-link {
+    @apply text-inherit no-underline hover:no-underline;
+  }
+
   code {
     @apply font-mono text-sm;
   }

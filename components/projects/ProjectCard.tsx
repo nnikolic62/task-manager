@@ -69,7 +69,7 @@ function CardShell({
   children: React.ReactNode;
 }) {
   const className =
-    "flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 transition-colors hover:border-zinc-600/80 dark:border-zinc-700 dark:bg-zinc-800/90 dark:hover:border-zinc-600";
+    "project-card-link flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 text-inherit no-underline transition-transform duration-200 ease-out hover:scale-[1.02] dark:border-zinc-700 dark:bg-zinc-800/90";
 
   if (href) {
     return (

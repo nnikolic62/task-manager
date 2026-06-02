@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import { projects, tasks } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
+
 
 export async function getProjectsByWorkspaceId(workspaceId: string) {
   const rows = await db
@@ -8,6 +9,7 @@ export async function getProjectsByWorkspaceId(workspaceId: string) {
       id: projects.id,
       workspaceId: projects.workspaceId,
       name: projects.name,
+      slug: projects.slug,
       description: projects.description,
       status: projects.status,
       createdBy: projects.createdBy,
@@ -26,4 +28,14 @@ export async function getProjectsByWorkspaceId(workspaceId: string) {
         ? Math.round((row.doneTaskCount / row.taskCount) * 100)
         : 0,
   }));
+}
+
+export async function getProjectBySlug(workspaceId: string, slug: string) {
+  const [project] = await db
+    .select()
+    .from(projects)
+    .where(and(eq(projects.slug, slug), eq(projects.workspaceId, workspaceId)))
+    .limit(1);
+
+  return project;
 }

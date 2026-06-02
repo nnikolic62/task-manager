@@ -11,8 +11,8 @@ import type { UserWorkspace } from "@/actions/workspaces";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 
-import { getAppNavItems } from "./app-nav-items";
-import { WorkspaceSelect } from "./WorkspaceSelect";
+import { getAppNavItems } from "@/lib/navigation/app-nav-items";
+import { SelectField } from "../ui/Select";
 
 type AppNavDrawerProps = {
   opened: boolean;
@@ -33,6 +33,8 @@ export function AppNavDrawer({
   const [createOpened, { open: openCreate, close: closeCreate }] =
     useDisclosure(false);
   const [workspaceName, setWorkspaceName] = useState("");
+  const activeWorkspace = workspaces.find((w) => w.slug === activeWorkspaceSlug);
+  const activeWorkspaceId = activeWorkspace?.id ?? workspaces[0]?.id ?? null;
 
   function handleOpenCreate() {
     setWorkspaceName("");
@@ -56,6 +58,18 @@ export function AppNavDrawer({
       router.refresh();
       closeCreate();
     });
+  }
+
+  function handleChange(workspaceId: string | null) {
+    if (!workspaceId) {
+      return;
+    }
+
+    const workspace = workspaces.find((w) => w.id === workspaceId);
+
+    if (workspace && workspace.slug !== activeWorkspaceSlug) {
+      router.push(`/${workspace.slug}`);
+    }
   }
 
   return (
@@ -83,9 +97,20 @@ export function AppNavDrawer({
     >
       <div className="flex h-full min-h-0 flex-col">
         <Stack gap="md" className="min-h-0 flex-1 overflow-y-auto">
-          <WorkspaceSelect
-            workspaces={workspaces}
-            activeWorkspaceSlug={activeWorkspaceSlug}
+          <SelectField
+            label="Workspace"
+            placeholder={
+              workspaces.length === 0 ? "No workspaces" : "Select workspace"
+            }
+            options={workspaces.map((workspace) => ({
+              value: workspace.id,
+              label: workspace.name,
+            }))}
+            value={activeWorkspaceId}
+            onChange={handleChange}
+            disabled={workspaces.length === 0}
+            allowDeselect={false}
+            comboboxProps={{ withinPortal: false }}
           />
           {getAppNavItems(activeWorkspaceSlug).map((item) => (
             <NavLink

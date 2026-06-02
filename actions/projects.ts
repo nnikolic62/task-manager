@@ -6,6 +6,8 @@ import { db } from "@/db";
 import { projects } from "@/db/schema";
 import { parseDueDate } from "@/lib/dates";
 import { getSession } from "@/lib/session";
+import { slugify } from "@/lib/utils";
+import { eq } from "drizzle-orm";
 
 export type CreateProjectResult =
   | { ok: true }
@@ -32,15 +34,41 @@ export async function createProject(
 
   const trimmedDescription = description?.trim();
 
-  await db.insert(projects).values({
-    workspaceId,
-    name: trimmed,
-    description: trimmedDescription || null,
-    createdBy: session.id,
-    dueDate: parseDueDate(dueDate),
-  });
+  const baseSlug = slugify(trimmed) || "project";
+  let slug = baseSlug;
+  let suffix = 0;
+
+  while (true) {
+    const [existing] = await db
+      .select({ id: projects.id })
+      .from(projects)
+      .where(eq(projects.slug, slug))
+      .limit(1);
+
+    if (!existing) {
+      break;
+    }
+
+    suffix += 1;
+    slug = `${baseSlug}-${suffix}`;
+  }
+
+  try {
+    await db.insert(projects).values({
+      workspaceId,
+      name: trimmed,
+      slug,
+      description: trimmedDescription || null,
+      createdBy: session.id,
+      dueDate: parseDueDate(dueDate),
+    });
+  } catch {
+    return { ok: false, toast: "Could not create project" };
+  }
 
   revalidatePath(`/${workspaceSlug}`, "page");
 
   return { ok: true };
 }
+
+

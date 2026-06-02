@@ -2,19 +2,19 @@ import { redirect } from "next/navigation";
 
 import { getUserWorkspaces } from "@/actions/workspaces";
 import { AppShell } from "@/components/layout/AppShell";
-import { WorkspaceContent } from "@/components/layout/WorkspaceContent";
+import { WorkspaceContent } from "@/components/workspaces/WorkspaceContent";
 import { getSession } from "@/lib/session";
 
 type WorkspaceLayoutProps = {
   children: React.ReactNode;
-  params: Promise<{ workspaces: string }>;
+  params: Promise<{ workspace: string }>;
 };
 
 export default async function WorkspaceLayout({
   children,
   params,
 }: WorkspaceLayoutProps) {
-  const { workspaces: workspaceSlug } = await params;
+  const { workspace: workspaceSlug } = await params;
   const session = await getSession();
 
   if (!session) {

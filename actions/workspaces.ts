@@ -6,6 +6,7 @@ import { asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { jobs, workspaceMembers, workspaces } from "@/db/schema";
 import { getSession } from "@/lib/session";
+import { slugify } from "@/lib/utils";
 
 export type UserWorkspace = {
   id: string;
@@ -41,10 +42,7 @@ export async function createWorkspace(
     return null;
   }
 
-  const slug = name
-    .toLowerCase()
-    .replace(/ /g, "-")
-    .replace(/[^a-z0-9-]/g, "");
+  const slug = slugify(name);
 
   const workspace = await db.transaction(async (tx) => {
     const [row] = await tx
