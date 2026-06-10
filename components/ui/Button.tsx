@@ -7,7 +7,11 @@ import {
   type MantineColor,
   type MantineTheme,
 } from "@mantine/core";
-import { forwardRef, type ComponentPropsWithoutRef } from "react";
+import {
+  forwardRef,
+  type ComponentPropsWithoutRef,
+  type ElementType,
+} from "react";
 
 export const BUTTON_INTENTS = [
   "primary",
@@ -92,6 +96,8 @@ export type ButtonProps = Omit<MantineButtonProps, "color" | "variant"> &
   NativeButtonProps & {
     intent?: ButtonIntent;
     appearance?: ButtonAppearance;
+    component?: ElementType;
+    href?: string;
   };
 
 type StylesInput = MantineButtonProps["styles"];
@@ -196,7 +202,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             },
           };
         }}
-        {...rest}
+        {...(rest as MantineButtonProps)}
       />
     );
   },

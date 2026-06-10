@@ -7,13 +7,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { createWorkspace } from "@/actions/workspaces";
-import type { UserWorkspace } from "@/actions/workspaces";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 
 import { getAppNavItems } from "@/lib/navigation/app-nav-items";
 import { SelectField } from "../ui/Select";
-
+import { UserWorkspace } from "@/lib/workspaces";
 type AppNavDrawerProps = {
   opened: boolean;
   onClose: () => void;

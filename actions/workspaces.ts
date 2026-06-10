@@ -1,37 +1,29 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { asc, eq } from "drizzle-orm";
-
 import { db } from "@/db";
-import { jobs, workspaceMembers, workspaces } from "@/db/schema";
+import {
+  jobs,
+  workspaceInvitations,
+  workspaceMembers,
+  workspaces,
+} from "@/db/schema";
+import {
+  getWorkspaceMemberRole,
+  hasPendingWorkspaceInvitation,
+  isWorkspaceMemberEmail,
+} from "@/lib/workspaces";
 import { getSession } from "@/lib/session";
 import { slugify } from "@/lib/utils";
+import {
+  inviteWorkspaceMemberSchema,
+  type InviteWorkspaceRole,
+} from "@/schemas/workspace.schema";
+import { UserWorkspace } from "@/lib/workspaces";
 
-export type UserWorkspace = {
-  id: string;
-  name: string;
-  slug: string;
-  role: "owner" | "admin" | "member" | "viewer";
-};
-
-export async function getUserWorkspaces(
-  userId: string,
-): Promise<UserWorkspace[]> {
-  const rows = await db
-    .select({
-      id: workspaces.id,
-      name: workspaces.name,
-      slug: workspaces.slug,
-      role: workspaceMembers.role,
-    })
-    .from(workspaceMembers)
-    .innerJoin(workspaces, eq(workspaceMembers.workspaceId, workspaces.id))
-    .where(eq(workspaceMembers.userId, userId))
-    .orderBy(asc(workspaces.name));
-
-  return rows;
-}
+export type InviteWorkspaceMemberResult =
+  | { ok: true }
+  | { ok: false; toast?: string };
 
 export async function createWorkspace(
   name: string,
@@ -81,4 +73,62 @@ export async function createWorkspace(
     slug: workspace.slug,
     role: "owner",
   };
+}
+
+export async function inviteWorkspaceMember(
+  workspaceId: string,
+  workspaceSlug: string,
+  email: string,
+  role: InviteWorkspaceRole,
+): Promise<InviteWorkspaceMemberResult> {
+  const session = await getSession();
+
+  if (!session) {
+    return { ok: false, toast: "You must be signed in" };
+  }
+
+  const parsed = inviteWorkspaceMemberSchema.safeParse({ email, role });
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      toast: parsed.error.issues[0]?.message ?? "Invalid input",
+    };
+  }
+
+  const actorRole = await getWorkspaceMemberRole(workspaceId, session.id);
+
+  if (!actorRole || (actorRole !== "owner" && actorRole !== "admin")) {
+    return { ok: false, toast: "You do not have permission to invite members" };
+  }
+
+  if (role === "admin" && actorRole !== "owner") {
+    return { ok: false, toast: "Only owners can invite admins" };
+  }
+
+  const normalizedEmail = parsed.data.email.trim().toLowerCase();
+
+  if (await isWorkspaceMemberEmail(workspaceId, normalizedEmail)) {
+    return { ok: false, toast: "This user is already a workspace member" };
+  }
+
+  if (await hasPendingWorkspaceInvitation(workspaceId, normalizedEmail)) {
+    return { ok: false, toast: "An invitation is already pending for this email" };
+  }
+
+  try {
+    await db.insert(workspaceInvitations).values({
+      workspaceId,
+      email: normalizedEmail,
+      role: parsed.data.role,
+      invitedBy: session.id,
+      status: "pending",
+    });
+  } catch {
+    return { ok: false, toast: "Could not send invitation" };
+  }
+
+  revalidatePath(`/${workspaceSlug}/members`);
+
+  return { ok: true };
 }

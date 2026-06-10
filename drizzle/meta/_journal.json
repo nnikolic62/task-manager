@@ -29,6 +29,13 @@
       "when": 1780398686744,
       "tag": "0003_add_project_slug",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1781031503110,
+      "tag": "0004_yielding_franklin_richards",
+      "breakpoints": true
     }
   ]
 }

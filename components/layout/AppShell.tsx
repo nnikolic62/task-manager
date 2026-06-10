@@ -2,7 +2,7 @@
 
 import { useDisclosure } from "@mantine/hooks";
 
-import type { UserWorkspace } from "@/actions/workspaces";
+import type { UserWorkspace } from "@/lib/workspaces";
 import type { SessionUser } from "@/lib/session";
 
 import { AppHeader } from "./AppHeader";

@@ -1,6 +1,7 @@
 import { KpiCard } from "@/components/analytics/KpiCard";
 import { CreateProjectButton } from "@/components/projects/CreateProjectButton";
 import { ProjectCard } from "@/components/projects/ProjectCard";
+import { ViewMembersButton } from "@/components/workspaces/ViewMembersButton";
 import { getProjectsByWorkspaceId } from "@/lib/projects";
 import { getSession } from "@/lib/session";
 import { getWorkspaceBySlug } from "@/lib/workspaces";
@@ -26,7 +27,7 @@ export default async function WorkspaceHomePage({
   }
 
   const projects = await getProjectsByWorkspaceId(workspace.id);
-  
+
 
   return (
     <div className="flex w-full flex-col gap-8">
@@ -39,10 +40,13 @@ export default async function WorkspaceHomePage({
             Workspace: <span className="font-medium text-foreground">{workspaceSlug}</span>
           </p>
         </div>
+        <div className="flex flex-row items-center gap-4">
         <CreateProjectButton
           workspaceId={workspace.id}
           workspaceSlug={workspace.slug}
         />
+        <ViewMembersButton workspaceSlug={workspace.slug} />
+        </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard

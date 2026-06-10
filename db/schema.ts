@@ -111,7 +111,29 @@ import {
       }),
     ]
   );
-  
+
+  export const workspaceInvitations = pgTable("workspace_invitations", {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id),
+
+    email: text("email").notNull(),
+
+    role: workspaceRoleEnum("role").notNull().default("member"),
+
+    invitedBy: uuid("invited_by")
+      .notNull()
+      .references(() => users.id),
+
+    status: text("status").notNull().default("pending"),
+
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+    }).defaultNow(),
+  });
+
   //
   // PROJECTS
   //
