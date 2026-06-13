@@ -1,59 +1,46 @@
-"use client"
+"use client";
 
-import { useState } from "react";
-import { type SubmitEvent } from "react";
-import { loginUserSchema, type LoginUser } from "@/schemas/user.schema";
-import { TextField } from "@/components/ui/TextField";
-import { MailIcon, LockIcon } from "@/components/auth/icons";
-import { loginUser } from "@/actions/auth";
-import { redirect } from "next/navigation";
-import { toast } from "../ui/Toast";
 import Link from "next/link";
+import { useActionState, useEffect, useState } from "react";
 
-export function LoginForm() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [errors, setErrors] = useState<Partial<Record<keyof LoginUser, string>>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
+import { loginAction, LoginActionState } from "@/actions/auth";
+import { AuthShell } from "@/components/auth/AuthShell";
+import { LockIcon, MailIcon } from "@/components/auth/icons";
+import { TextField } from "@/components/ui/TextField";
+import { toast } from "@/components/ui/Toast";
 
-    async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-        event.preventDefault();
+type LoginFormProps = {
+  redirectTo?: string;
+};
 
-        const result = loginUserSchema.safeParse({ email, password });
+export function LoginForm({ redirectTo }: LoginFormProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [state, formAction, pending] =
+    useActionState<LoginActionState, FormData>(loginAction, { fieldErrors: {} });
 
-        if (!result.success) {
-            const fieldErrors: Partial<Record<keyof LoginUser, string>> = {};
-            for (const issues of result.error.issues) {
-                const path = issues.path[0] as keyof LoginUser;
-                if (path && !fieldErrors[path]) {
-                    fieldErrors[path] = issues.message;
-                }
-            }
-            setErrors(fieldErrors);
-            return;
-        }
-
-        setErrors({});
-        setIsSubmitting(true);
-
-        const loginResult = await loginUser({
-            email: result.data.email,
-            password: result.data.password,
-        });
-
-        if (!loginResult) {
-            toast.error("Invalid email or password");
-            setIsSubmitting(false);
-            return;
-        }
-
-        toast.success(`Welcome back, ${loginResult.user.name}`);
-        redirect(loginResult.redirectTo);
+  useEffect(() => {
+    if (state?.toast) {
+      toast.error(state.toast);
     }
+  }, [state]);
 
-    return (
-        <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+  const registerHref = redirectTo
+    ? `/register?redirect=${encodeURIComponent(redirectTo)}`
+    : "/register";
+
+  return (
+    <AuthShell
+      title="Welcome back"
+      subtitle="Sign in to your workspace"
+      footerLabel="Don't have an account?"
+      footerHref={registerHref}
+      footerLinkText="Create one"
+    >
+      <form action={formAction} className="space-y-5" noValidate>
+        {redirectTo ? (
+          <input type="hidden" name="redirect" value={redirectTo} />
+        ) : null}
+
         <TextField
           label="Email"
           name="email"
@@ -61,9 +48,7 @@ export function LoginForm() {
           placeholder="you@example.com"
           autoComplete="email"
           required
-          value={email}
-          onChange={(event) => setEmail(event.currentTarget.value)}
-          error={errors.email}
+          error={state?.fieldErrors?.email}
           leftSection={<MailIcon />}
         />
 
@@ -75,9 +60,7 @@ export function LoginForm() {
             placeholder="••••••••"
             autoComplete="current-password"
             required
-            value={password}
-            onChange={(event) => setPassword(event.currentTarget.value)}
-            error={errors.password}
+            error={state?.fieldErrors?.password}
             leftSection={<LockIcon />}
             rightSection={
               <button
@@ -103,11 +86,12 @@ export function LoginForm() {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={pending}
           className="h-11 w-full rounded-lg bg-primary text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isSubmitting ? "Signing in…" : "Sign in"}
+          {pending ? "Signing in…" : "Sign in"}
         </button>
       </form>
-    );
+    </AuthShell>
+  );
 }

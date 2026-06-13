@@ -13,8 +13,9 @@ import { hashPassword, verifyPassword } from "@/lib/password";
 import { issueSession } from "@/lib/session";
 import { emailExists } from "@/lib/users";
 import { loginUserSchema } from "@/schemas/user.schema";
+import { getSafeRedirectPath } from "@/lib/utils";
 
-import { getUserWorkspaces } from "./workspaces";
+import { getUserWorkspaces } from "@/lib/workspaces";
 
 export type LoginActionState = {
   fieldErrors?: Partial<Record<"email" | "password", string>>;
@@ -58,7 +59,10 @@ export async function loginAction(
     return { toast: "Invalid email or password" };
   }
 
-  redirect(result.redirectTo);
+  const redirectTo =
+    getSafeRedirectPath(formData.get("redirect")) ?? result.redirectTo;
+
+  redirect(redirectTo);
 }
 
 export type RegisterResult =

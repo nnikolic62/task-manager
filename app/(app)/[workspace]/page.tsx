@@ -15,11 +15,13 @@ export default async function WorkspaceHomePage({
   params,
 }: WorkspaceHomePageProps) {
   const session = await getSession();
+  const { workspace: workspaceSlug } = await params;
+
   if (!session) {
-    redirect("/login");
+    const returnPath = `/${workspaceSlug}`;
+    redirect(`/login?redirect=${encodeURIComponent(returnPath)}`);
   }
 
-  const { workspace: workspaceSlug } = await params;
   const workspace = await getWorkspaceBySlug(workspaceSlug);
 
   if (!workspace) {

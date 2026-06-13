@@ -21,7 +21,7 @@ async function hasValidAccessToken(request: NextRequest) {
 }
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, search } = request.nextUrl;
   const isPublic = isPublicPath(pathname);
   const hasAccess = await hasValidAccessToken(request);
 
@@ -33,12 +33,20 @@ export async function middleware(request: NextRequest) {
 
   if (!isPublic && !hasAccess && hasRefresh) {
     const refreshUrl = new URL("/api/auth/refresh", request.url);
-    refreshUrl.searchParams.set("redirect", pathname);
+    refreshUrl.searchParams.set(
+      "redirect",
+      `${pathname}${search}`,
+    );
     return NextResponse.redirect(refreshUrl);
   }
 
   if (!isPublic && !hasAccess) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set(
+      "redirect",
+      `${pathname}${search}`,
+    );
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();

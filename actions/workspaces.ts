@@ -14,12 +14,13 @@ import {
   isWorkspaceMemberEmail,
 } from "@/lib/workspaces";
 import { getSession } from "@/lib/session";
-import { slugify } from "@/lib/utils";
+import { slugify, getAppBaseUrl } from "@/lib/utils";
 import {
   inviteWorkspaceMemberSchema,
   type InviteWorkspaceRole,
 } from "@/schemas/workspace.schema";
 import { UserWorkspace } from "@/lib/workspaces";
+import { eq } from "drizzle-orm";
 
 export type InviteWorkspaceMemberResult =
   | { ok: true }
@@ -117,18 +118,98 @@ export async function inviteWorkspaceMember(
   }
 
   try {
-    await db.insert(workspaceInvitations).values({
-      workspaceId,
-      email: normalizedEmail,
-      role: parsed.data.role,
-      invitedBy: session.id,
-      status: "pending",
+    await db.transaction(async (tx) => {
+      const [invitation] = await tx
+        .insert(workspaceInvitations)
+        .values({
+          workspaceId,
+          email: normalizedEmail,
+          role: parsed.data.role,
+          invitedBy: session.id,
+          status: "pending",
+        })
+        .returning({ id: workspaceInvitations.id });
+
+      const acceptUrl = `${getAppBaseUrl()}/invites/accept?token=${invitation.id}`;
+
+      await tx.insert(jobs).values({
+        type: "send_email",
+        payload: {
+          to: normalizedEmail,
+          subject: "You have been invited to a workspace",
+          html: `<h1>You have been invited to a workspace</h1>
+          <p>You can accept the invitation by clicking the link below:</p>
+          <a href="${acceptUrl}">Accept invitation</a>`,
+        },
+      });
     });
+    revalidatePath(`/${workspaceSlug}/members`);
+    return { ok: true };
   } catch {
     return { ok: false, toast: "Could not send invitation" };
   }
+}
 
-  revalidatePath(`/${workspaceSlug}/members`);
+export async function acceptWorkspaceInvitation(
+  invitationId: string,
+  workspaceId: string,
+  workspaceSlug: string,
+): Promise<InviteWorkspaceMemberResult> {
+  const session = await getSession();
 
-  return { ok: true };
+  if (!session) {
+    return { ok: false, toast: "You must be signed in" };
+  }
+
+  const [invitation] = await db
+    .select()
+    .from(workspaceInvitations)
+    .where(eq(workspaceInvitations.id, invitationId))
+    .limit(1);
+
+  if (!invitation) {
+    return { ok: false, toast: "Invitation not found" };
+  }
+
+  if (invitation.workspaceId !== workspaceId) {
+    return { ok: false, toast: "Invalid invitation" };
+  }
+
+  if (invitation.status !== "pending") {
+    return { ok: false, toast: "Invitation is no longer valid" };
+  }
+
+  const normalizedEmail = session.email.trim().toLowerCase();
+
+  if (invitation.email !== normalizedEmail) {
+    return {
+      ok: false,
+      toast: "This invitation was sent to a different email",
+    };
+  }
+
+  if (await isWorkspaceMemberEmail(workspaceId, normalizedEmail)) {
+    return { ok: false, toast: "You are already a member of this workspace" };
+  }
+
+  try {
+    await db.transaction(async (tx) => {
+      await tx.insert(workspaceMembers).values({
+        workspaceId,
+        userId: session.id,
+        role: invitation.role,
+      });
+
+      await tx
+        .update(workspaceInvitations)
+        .set({ status: "accepted" })
+        .where(eq(workspaceInvitations.id, invitationId));
+    });
+
+    revalidatePath(`/${workspaceSlug}`, "layout");
+    revalidatePath(`/${workspaceSlug}/members`);
+    return { ok: true };
+  } catch {
+    return { ok: false, toast: "Could not accept invitation" };
+  }
 }

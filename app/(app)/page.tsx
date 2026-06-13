@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { getUserWorkspaces } from "@/actions/workspaces";
+import { getUserWorkspaces } from "@/lib/workspaces";
 import { getSession } from "@/lib/session";
 import { AppShell } from "@/components/layout/AppShell";
 

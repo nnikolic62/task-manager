@@ -29,6 +29,13 @@ export type WorkspaceInvitation = {
   createdAt: Date | null;
 };
 
+export type WorkspaceInvitationDetails = WorkspaceInvitation & {
+  workspaceId: string;
+  status: string;
+  workspaceName: string;
+  workspaceSlug: string;
+};
+
 export async function getWorkspaceBySlug(slug: string) {
   const [workspace] = await db
     .select()
@@ -159,4 +166,26 @@ export async function hasPendingWorkspaceInvitation(
   } catch {
     return false;
   }
+}
+
+export async function getWorkspaceInvitationById(
+  invitationId: string,
+): Promise<WorkspaceInvitationDetails | null> {
+  const [invitation] = await db
+    .select({
+      id: workspaceInvitations.id,
+      email: workspaceInvitations.email,
+      role: workspaceInvitations.role,
+      createdAt: workspaceInvitations.createdAt,
+      workspaceId: workspaceInvitations.workspaceId,
+      status: workspaceInvitations.status,
+      workspaceName: workspaces.name,
+      workspaceSlug: workspaces.slug,
+    })
+    .from(workspaceInvitations)
+    .innerJoin(workspaces, eq(workspaceInvitations.workspaceId, workspaces.id))
+    .where(eq(workspaceInvitations.id, invitationId))
+    .limit(1);
+
+  return invitation ?? null;
 }
