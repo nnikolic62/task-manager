@@ -23,15 +23,15 @@ async function hasValidAccessToken(request: NextRequest) {
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const isPublic = isPublicPath(pathname);
-  const hasAccess = await hasValidAccessToken(request);
+  const hasValidAccess = await hasValidAccessToken(request);
 
-  if (isPublic && hasAccess) {
+  if (isPublic && hasValidAccess) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
   const hasRefresh = Boolean(request.cookies.get("refreshToken")?.value);
 
-  if (!isPublic && !hasAccess && hasRefresh) {
+  if (!isPublic && !hasValidAccess && hasRefresh) {
     const refreshUrl = new URL("/api/auth/refresh", request.url);
     refreshUrl.searchParams.set(
       "redirect",
@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(refreshUrl);
   }
 
-  if (!isPublic && !hasAccess) {
+  if (!isPublic && !hasValidAccess) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set(
       "redirect",
