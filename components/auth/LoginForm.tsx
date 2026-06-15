@@ -8,6 +8,7 @@ import { AuthShell } from "@/components/auth/AuthShell";
 import { LockIcon, MailIcon } from "@/components/auth/icons";
 import { TextField } from "@/components/ui/TextField";
 import { toast } from "@/components/ui/Toast";
+import { GoogleSSO } from "./GoogleSSO";
 
 type LoginFormProps = {
   redirectTo?: string;
@@ -91,6 +92,10 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
         >
           {pending ? "Signing in…" : "Sign in"}
         </button>
+        <div className="flex items-center justify-center">
+          <span className="text-sm text-muted-foreground">Or</span>
+        </div>
+        <GoogleSSO />
       </form>
     </AuthShell>
   );

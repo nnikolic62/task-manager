@@ -52,6 +52,8 @@ import {
     email: text("email").notNull().unique(),
   
     passwordHash: text("password_hash"),
+
+    googleId: text("google_id").unique(),
   
     name: text("name").notNull(),
   
