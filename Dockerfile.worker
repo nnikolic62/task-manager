@@ -8,4 +8,4 @@ RUN npm ci
 
 COPY . .
 
-CMD ["npm", "tsx", "workers/emailWorker.ts"]
+CMD ["npx", "tsx", "workers/emailWorker.ts"]
