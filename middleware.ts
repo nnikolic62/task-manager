@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyAccessToken } from "@/lib/auth";
 
-const publicPaths = ["/login", "/register", "/api/auth/refresh", "/api/auth/google"];
+const publicPaths = ["/login", "/register", "/api/auth/refresh", "/api/auth/google", "/api/telegram/webhook"];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some(
