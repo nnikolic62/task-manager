@@ -1,10 +1,7 @@
 "use client";
 
 import { Notifications } from "@mantine/notifications";
-import {
-  notifications,
-  type NotificationData,
-} from "@mantine/notifications";
+import { notifications, type NotificationData } from "@mantine/notifications";
 
 export type ToastVariant = "success" | "error" | "warning" | "info";
 

@@ -9,10 +9,11 @@ import { useState, useTransition } from "react";
 import { createWorkspace } from "@/actions/workspaces";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
-
 import { getAppNavItems } from "@/lib/navigation/app-nav-items";
-import { SelectField } from "../ui/Select";
 import { UserWorkspace } from "@/lib/workspaces";
+
+import { SelectField } from "../ui/Select";
+
 type AppNavDrawerProps = {
   opened: boolean;
   onClose: () => void;
@@ -32,7 +33,9 @@ export function AppNavDrawer({
   const [createOpened, { open: openCreate, close: closeCreate }] =
     useDisclosure(false);
   const [workspaceName, setWorkspaceName] = useState("");
-  const activeWorkspace = workspaces.find((w) => w.slug === activeWorkspaceSlug);
+  const activeWorkspace = workspaces.find(
+    (w) => w.slug === activeWorkspaceSlug,
+  );
   const activeWorkspaceId = activeWorkspace?.id ?? workspaces[0]?.id ?? null;
 
   function handleOpenCreate() {

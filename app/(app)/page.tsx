@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 
-import { getUserWorkspaces } from "@/lib/workspaces";
 import { getSession } from "@/lib/session";
-import { AppShell } from "@/components/layout/AppShell";
+import { getUserWorkspaces } from "@/lib/workspaces";
 
 export default async function AppIndexPage() {
   const session = await getSession();

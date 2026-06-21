@@ -6,12 +6,12 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { createProject } from "@/actions/projects";
-import { todayDateString } from "@/lib/dates";
 import { Button } from "@/components/ui/Button";
 import { DatePickerField } from "@/components/ui/DatePickerField";
-import { TextField } from "@/components/ui/TextField";
 import { TextareaField } from "@/components/ui/TextareaField";
+import { TextField } from "@/components/ui/TextField";
 import { toast } from "@/components/ui/Toast";
+import { todayDateString } from "@/lib/dates";
 
 type CreateProjectButtonProps = {
   workspaceId: string;

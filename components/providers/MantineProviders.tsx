@@ -6,16 +6,15 @@ import {
   MantineProvider,
 } from "@mantine/core";
 import { DatesProvider } from "@mantine/dates";
+
 import { Toaster } from "@/components/ui/Toast";
 
 const theme = createTheme({
   primaryColor: "indigo",
   defaultRadius: "md",
-  fontFamily:
-    "var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif",
+  fontFamily: "var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif",
   headings: {
-    fontFamily:
-      "var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif",
+    fontFamily: "var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif",
   },
 });
 

@@ -9,7 +9,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const { redirect } = await searchParams;
   const redirectTo = getSafeRedirectPath(redirect) ?? undefined;
 
-  return <div>
-    <LoginForm redirectTo={redirectTo} />
-  </div>;
+  return (
+    <div>
+      <LoginForm redirectTo={redirectTo} />
+    </div>
+  );
 }

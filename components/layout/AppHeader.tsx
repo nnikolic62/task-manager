@@ -2,12 +2,12 @@
 
 import { ActionIcon, Avatar, Burger, Group, Text } from "@mantine/core";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { logoutAndRedirect, logoutUser } from "@/actions/auth";
 import type { SessionUser } from "@/lib/session";
 
 import { ThemeToggle } from "./ThemeToggle";
-import { redirect } from "next/navigation";
 
 type AppHeaderProps = {
   user: SessionUser;

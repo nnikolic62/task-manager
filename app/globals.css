@@ -202,8 +202,10 @@ html[data-mantine-color-scheme="dark"] {
   /* Shadows */
   --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.04);
   --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --shadow-md:
+    0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
 
   /* Typography scale */
   --text-xs: 0.75rem;
@@ -240,7 +242,9 @@ html[data-mantine-color-scheme="dark"] {
 
   body {
     @apply bg-background text-foreground font-sans min-h-full;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
 
   h1 {

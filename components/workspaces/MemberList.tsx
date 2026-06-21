@@ -1,5 +1,5 @@
-import type { WorkspaceMember } from "@/lib/workspaces";
 import { getInitials } from "@/lib/kanban";
+import type { WorkspaceMember } from "@/lib/workspaces";
 
 import { WorkspaceRoleBadge } from "./WorkspaceRoleBadge";
 

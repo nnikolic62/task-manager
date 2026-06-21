@@ -45,14 +45,12 @@ function resolveClassNames(
   return classNames ?? {};
 }
 
-function buildClassNames(
-  options: {
-    size: TextInputProps["size"];
-    variant: TextInputProps["variant"];
-    hasError: boolean;
-    userClassNames: Partial<Record<string, string>>;
-  },
-) {
+function buildClassNames(options: {
+  size: TextInputProps["size"];
+  variant: TextInputProps["variant"];
+  hasError: boolean;
+  userClassNames: Partial<Record<string, string>>;
+}) {
   const { size, variant, hasError, userClassNames } = options;
 
   return {
@@ -137,8 +135,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           return {
             ...userStyles,
             input: {
-              fontSize:
-                size === "sm" ? theme.fontSizes.sm : theme.fontSizes.md,
+              fontSize: size === "sm" ? theme.fontSizes.sm : theme.fontSizes.md,
               ...userStyles?.input,
             },
           };

@@ -7,16 +7,16 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { updateTaskStatus } from "@/actions/tasks";
+import { KANBAN_COLUMNS } from "@/lib/kanban";
 import {
   isTaskStatus,
   type KanbanTask,
   type TaskStatus,
 } from "@/schemas/task.schema";
 
-import { KANBAN_COLUMNS } from "@/lib/kanban";
 import { KanbanColumn } from "./KanbanColumn";
 import { TaskCard } from "./TaskCard";
 
@@ -49,10 +49,6 @@ export function KanbanBoard({
 }: KanbanBoardProps) {
   const [tasks, setTasks] = useState(initialTasks);
   const [activeTask, setActiveTask] = useState<KanbanTask | null>(null);
-
-  useEffect(() => {
-    setTasks(initialTasks);
-  }, [initialTasks]);
 
   function handleDragStart(event: DragStartEvent) {
     const task = tasks.find((t) => t.id === event.active.id);

@@ -1,12 +1,7 @@
 "use client";
 
-import {
-  type MantineTheme,
-} from "@mantine/core";
-import {
-  DatePickerInput,
-  type DatePickerInputProps,
-} from "@mantine/dates";
+import { type MantineTheme } from "@mantine/core";
+import { DatePickerInput, type DatePickerInputProps } from "@mantine/dates";
 import { forwardRef, useId } from "react";
 
 export type DatePickerFieldProps = DatePickerInputProps;
@@ -140,8 +135,7 @@ export const DatePickerField = forwardRef<
         return {
           ...userStyles,
           input: {
-            fontSize:
-              size === "sm" ? theme.fontSizes.sm : theme.fontSizes.md,
+            fontSize: size === "sm" ? theme.fontSizes.sm : theme.fontSizes.md,
             ...userStyles?.input,
           },
         };

@@ -142,8 +142,7 @@ export const SelectField = forwardRef<HTMLInputElement, SelectFieldProps>(
           return {
             ...userStyles,
             input: {
-              fontSize:
-                size === "sm" ? theme.fontSizes.sm : theme.fontSizes.md,
+              fontSize: size === "sm" ? theme.fontSizes.sm : theme.fontSizes.md,
               ...userStyles?.input,
             },
           };

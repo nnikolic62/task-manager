@@ -1,5 +1,5 @@
 export function slugify(text: string) {
-  if(!text) {
+  if (!text) {
     return "workspace";
   }
   return text
@@ -22,7 +22,11 @@ export function getAppBaseUrl() {
 export function getSafeRedirectPath(
   path: string | FormDataEntryValue | null | undefined,
 ): string | null {
-  if (typeof path !== "string" || !path.startsWith("/") || path.startsWith("//")) {
+  if (
+    typeof path !== "string" ||
+    !path.startsWith("/") ||
+    path.startsWith("//")
+  ) {
     return null;
   }
 

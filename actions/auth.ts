@@ -1,21 +1,25 @@
 "use server";
 
+import bcrypt from "bcryptjs";
+import { and, eq, isNull } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { and, eq, isNull } from "drizzle-orm";
-import bcrypt from "bcryptjs";
 
 import { db } from "@/db";
-import { refreshTokens, users, workspaces, workspaceMembers } from "@/db/schema";
+import {
+  refreshTokens,
+  users,
+  workspaces,
+  workspaceMembers,
+} from "@/db/schema";
 import { verifyAccessToken } from "@/lib/auth";
 import { clearAuthCookies } from "@/lib/cookies";
 import { hashPassword, verifyPassword } from "@/lib/password";
 import { issueSession } from "@/lib/session";
 import { emailExists } from "@/lib/users";
-import { loginUserSchema } from "@/schemas/user.schema";
 import { getSafeRedirectPath } from "@/lib/utils";
-
 import { getUserWorkspaces } from "@/lib/workspaces";
+import { loginUserSchema } from "@/schemas/user.schema";
 
 export type LoginActionState = {
   fieldErrors?: Partial<Record<"email" | "password", string>>;
@@ -65,9 +69,7 @@ export async function loginAction(
   redirect(redirectTo);
 }
 
-export type RegisterResult =
-  | { ok: true }
-  | { ok: false; toast?: string };
+export type RegisterResult = { ok: true } | { ok: false; toast?: string };
 
 export async function registerUser(data: {
   name: string;
@@ -160,8 +162,7 @@ export async function loginUser(data: { email: string; password: string }) {
   await issueSession(user.id);
 
   const workspaces = await getUserWorkspaces(user.id);
-  const redirectTo =
-    workspaces.length > 0 ? `/${workspaces[0].slug}` : "/";
+  const redirectTo = workspaces.length > 0 ? `/${workspaces[0].slug}` : "/";
 
   return {
     user: {

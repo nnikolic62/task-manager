@@ -1,7 +1,7 @@
-import { db } from "@/db";
-import { projects, tasks } from "@/db/schema";
 import { and, eq, sql } from "drizzle-orm";
 
+import { db } from "@/db";
+import { projects, tasks } from "@/db/schema";
 
 export async function getProjectsByWorkspaceId(workspaceId: string) {
   const rows = await db

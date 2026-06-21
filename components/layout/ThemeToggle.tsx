@@ -1,21 +1,19 @@
 "use client";
 
 import { ActionIcon, Tooltip, useMantineColorScheme } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export function ThemeToggle() {
   const { colorScheme, setColorScheme } = useMantineColorScheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [mounted] = useState(true);
 
   const isDark = colorScheme === "dark";
 
   return (
     <Tooltip
-      label={mounted ? (isDark ? "Light mode" : "Dark mode") : "Toggle color scheme"}
+      label={
+        mounted ? (isDark ? "Light mode" : "Dark mode") : "Toggle color scheme"
+      }
     >
       <ActionIcon
         variant="default"
@@ -24,13 +22,7 @@ export function ThemeToggle() {
         aria-label="Toggle color scheme"
         onClick={() => setColorScheme(isDark ? "light" : "dark")}
       >
-        {!mounted ? (
-          <IconPlaceholder />
-        ) : isDark ? (
-          <SunIcon />
-        ) : (
-          <MoonIcon />
-        )}
+        {!mounted ? <IconPlaceholder /> : isDark ? <SunIcon /> : <MoonIcon />}
       </ActionIcon>
     </Tooltip>
   );

@@ -8,6 +8,7 @@ import { AuthShell } from "@/components/auth/AuthShell";
 import { LockIcon, MailIcon } from "@/components/auth/icons";
 import { TextField } from "@/components/ui/TextField";
 import { toast } from "@/components/ui/Toast";
+
 import { GoogleSSO } from "./GoogleSSO";
 
 type LoginFormProps = {
@@ -16,8 +17,10 @@ type LoginFormProps = {
 
 export function LoginForm({ redirectTo }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const [state, formAction, pending] =
-    useActionState<LoginActionState, FormData>(loginAction, { fieldErrors: {} });
+  const [state, formAction, pending] = useActionState<
+    LoginActionState,
+    FormData
+  >(loginAction, { fieldErrors: {} });
 
   useEffect(() => {
     if (state?.toast) {

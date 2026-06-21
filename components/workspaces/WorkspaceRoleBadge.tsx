@@ -1,5 +1,5 @@
-import type { WorkspaceRole } from "@/schemas/workspace.schema";
 import { WORKSPACE_ROLE_STYLES } from "@/lib/workspace-roles";
+import type { WorkspaceRole } from "@/schemas/workspace.schema";
 
 type WorkspaceRoleBadgeProps = {
   role: WorkspaceRole;

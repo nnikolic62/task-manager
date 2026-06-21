@@ -9,8 +9,8 @@ import { createTask } from "@/actions/tasks";
 import { Button } from "@/components/ui/Button";
 import { DatePickerField } from "@/components/ui/DatePickerField";
 import { SelectField } from "@/components/ui/Select";
-import { TextField } from "@/components/ui/TextField";
 import { TextareaField } from "@/components/ui/TextareaField";
+import { TextField } from "@/components/ui/TextField";
 import { toast } from "@/components/ui/Toast";
 import { COLUMN_CONFIG } from "@/lib/kanban";
 import type { TaskPriority, TaskStatus } from "@/schemas/task.schema";
@@ -128,7 +128,9 @@ export function CreateTaskDialog({
           <SelectField
             label="Priority"
             value={priority}
-            onChange={(value) => setPriority((value as TaskPriority) ?? "medium")}
+            onChange={(value) =>
+              setPriority((value as TaskPriority) ?? "medium")
+            }
             options={[...PRIORITY_OPTIONS]}
           />
           <DatePickerField

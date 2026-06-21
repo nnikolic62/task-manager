@@ -4,9 +4,8 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import dayjs from "dayjs";
 
-import type { KanbanTask } from "@/schemas/task.schema";
-
 import { getInitials, priorityStyle } from "@/lib/kanban";
+import type { KanbanTask } from "@/schemas/task.schema";
 
 type TaskCardProps = {
   task: KanbanTask;

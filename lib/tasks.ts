@@ -1,9 +1,12 @@
+import { asc, eq } from "drizzle-orm";
+
 import { db } from "@/db";
 import { tasks, users } from "@/db/schema";
 import type { KanbanTask } from "@/schemas/task.schema";
-import { asc, eq } from "drizzle-orm";
 
-export async function getTasksByProjectId(projectId: string): Promise<KanbanTask[]> {
+export async function getTasksByProjectId(
+  projectId: string,
+): Promise<KanbanTask[]> {
   const rows = await db
     .select({
       id: tasks.id,

@@ -1,6 +1,6 @@
-import { cookies } from "next/headers";
-import { and, eq, gt, isNull } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { and, eq, gt, isNull } from "drizzle-orm";
+import { cookies } from "next/headers";
 
 import { db } from "@/db";
 import { refreshTokens, users } from "@/db/schema";
@@ -40,7 +40,7 @@ async function loadUser(userId: string): Promise<SessionUser | null> {
 
 export async function issueSession(userId: string) {
   const accessToken = await generateAccessToken(userId);
-  const refreshToken = await generateRefreshToken(userId);
+  const refreshToken = generateRefreshToken();
   const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
 
   await db.insert(refreshTokens).values({

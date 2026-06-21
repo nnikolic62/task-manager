@@ -1,3 +1,5 @@
+import { and, asc, eq, sql } from "drizzle-orm";
+
 import { db } from "@/db";
 import {
   users,
@@ -6,7 +8,6 @@ import {
   workspaces,
 } from "@/db/schema";
 import type { WorkspaceRole } from "@/schemas/workspace.schema";
-import { and, asc, eq, sql } from "drizzle-orm";
 
 export type WorkspaceMember = {
   id: string;
@@ -67,7 +68,7 @@ export async function getWorkspaceMemberRole(
 export async function getWorkspaceMembers(
   workspaceId: string,
 ): Promise<WorkspaceMember[]> {
-  return db
+  return await db
     .select({
       id: users.id,
       name: users.name,

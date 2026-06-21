@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/db";
@@ -43,7 +43,10 @@ export async function createTask(
   });
 
   if (!parsed.success) {
-    return { ok: false, toast: parsed.error.issues[0]?.message ?? "Invalid input" };
+    return {
+      ok: false,
+      toast: parsed.error.issues[0]?.message ?? "Invalid input",
+    };
   }
 
   const [{ nextPosition }] = await db

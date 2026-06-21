@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
+import { KanbanBoard } from "@/components/projects/KanbanBoard";
 import { ProjectBoardHeader } from "@/components/projects/ProjectBoardHeader";
 import { getProjectBySlug } from "@/lib/projects";
 import { getTasksByProjectId } from "@/lib/tasks";
 import { getWorkspaceBySlug } from "@/lib/workspaces";
-import { KanbanBoard } from "@/components/projects/KanbanBoard";
 
 export default async function ProjectPage({
   params,

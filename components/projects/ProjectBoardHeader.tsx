@@ -1,8 +1,8 @@
 import Link from "next/link";
 
+import { getInitials } from "@/lib/kanban";
 import type { Project } from "@/schemas/project.schema";
 import type { KanbanTask } from "@/schemas/task.schema";
-import { getInitials } from "@/lib/kanban";
 
 type ProjectBoardHeaderProps = {
   project: Project;
@@ -68,8 +68,7 @@ export function ProjectBoardHeader({
   const style = projectStatusStyle(status);
   const members = uniqueAssignees(tasks);
   const dueThisWeek = countDueThisWeek(tasks);
-  const taskLabel =
-    tasks.length === 1 ? "1 task" : `${tasks.length} tasks`;
+  const taskLabel = tasks.length === 1 ? "1 task" : `${tasks.length} tasks`;
   const dueLabel =
     dueThisWeek === 0
       ? "None due this week"

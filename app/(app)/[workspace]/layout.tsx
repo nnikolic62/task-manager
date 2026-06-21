@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/layout/AppShell";
 import { WorkspaceContent } from "@/components/workspaces/WorkspaceContent";
-import { getUserWorkspaces } from "@/lib/workspaces";
 import { getSession } from "@/lib/session";
+import { getUserWorkspaces } from "@/lib/workspaces";
 
 type WorkspaceLayoutProps = {
   children: React.ReactNode;

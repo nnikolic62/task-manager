@@ -10,12 +10,7 @@ export type KanbanTask = Task & {
   assigneeName: string | null;
 };
 
-export const TASK_STATUSES = [
-  "todo",
-  "in_progress",
-  "review",
-  "done",
-] as const;
+export const TASK_STATUSES = ["todo", "in_progress", "review", "done"] as const;
 
 export type TaskStatus = (typeof TASK_STATUSES)[number];
 

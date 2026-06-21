@@ -122,7 +122,9 @@ export function ProjectCard({
       ) : null}
 
       <footer className="flex items-center gap-3 pt-1">
-        <span className="shrink-0 text-sm text-muted-foreground">{taskLabel}</span>
+        <span className="shrink-0 text-sm text-muted-foreground">
+          {taskLabel}
+        </span>
 
         <div
           className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-muted dark:bg-zinc-700"
@@ -139,7 +141,10 @@ export function ProjectCard({
         </div>
 
         {members.length > 0 ? (
-          <div className="flex shrink-0 -space-x-2" aria-label="Project members">
+          <div
+            className="flex shrink-0 -space-x-2"
+            aria-label="Project members"
+          >
             {members.slice(0, 4).map((member) => (
               <span
                 key={member.name}

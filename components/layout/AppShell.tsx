@@ -2,8 +2,8 @@
 
 import { useDisclosure } from "@mantine/hooks";
 
-import type { UserWorkspace } from "@/lib/workspaces";
 import type { SessionUser } from "@/lib/session";
+import type { UserWorkspace } from "@/lib/workspaces";
 
 import { AppHeader } from "./AppHeader";
 import { AppNavDrawer } from "./AppNavDrawer";

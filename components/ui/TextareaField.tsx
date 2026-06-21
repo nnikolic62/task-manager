@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Textarea,
-  type MantineTheme,
-  type TextareaProps,
-} from "@mantine/core";
+import { Textarea, type MantineTheme, type TextareaProps } from "@mantine/core";
 import { forwardRef, useId } from "react";
 
 export type TextareaFieldProps = TextareaProps;
@@ -72,64 +68,64 @@ function buildClassNames(options: {
   };
 }
 
-export const TextareaField = forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
-  function TextareaField(
-    {
-      id,
-      size = "md",
-      radius = "md",
-      variant = "default",
-      label,
-      description,
-      error,
-      required,
-      styles,
-      classNames,
-      rows = 4,
-      ...rest
-    },
-    ref,
-  ) {
-    const generatedId = useId();
-    const inputId = id ?? generatedId;
-    const hasError = Boolean(error);
-
-    return (
-      <Textarea
-        ref={ref}
-        id={inputId}
-        size={size}
-        radius={radius}
-        variant={variant}
-        label={label}
-        description={description}
-        error={error}
-        required={required}
-        withAsterisk={required}
-        rows={rows}
-        classNames={(theme, props, ctx) =>
-          buildClassNames({
-            variant,
-            hasError,
-            userClassNames: resolveClassNames(classNames, theme, props, ctx),
-          })
-        }
-        styles={(theme, props, ctx) => {
-          const userStyles = resolveStyles(styles, theme, props, ctx);
-
-          return {
-            ...userStyles,
-            input: {
-              fontSize:
-                size === "sm" ? theme.fontSizes.sm : theme.fontSizes.md,
-              ...userStyles?.input,
-            },
-          };
-        }}
-        {...rest}
-      />
-    );
+export const TextareaField = forwardRef<
+  HTMLTextAreaElement,
+  TextareaFieldProps
+>(function TextareaField(
+  {
+    id,
+    size = "md",
+    radius = "md",
+    variant = "default",
+    label,
+    description,
+    error,
+    required,
+    styles,
+    classNames,
+    rows = 4,
+    ...rest
   },
-);
+  ref,
+) {
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+  const hasError = Boolean(error);
+
+  return (
+    <Textarea
+      ref={ref}
+      id={inputId}
+      size={size}
+      radius={radius}
+      variant={variant}
+      label={label}
+      description={description}
+      error={error}
+      required={required}
+      withAsterisk={required}
+      rows={rows}
+      classNames={(theme, props, ctx) =>
+        buildClassNames({
+          variant,
+          hasError,
+          userClassNames: resolveClassNames(classNames, theme, props, ctx),
+        })
+      }
+      styles={(theme, props, ctx) => {
+        const userStyles = resolveStyles(styles, theme, props, ctx);
+
+        return {
+          ...userStyles,
+          input: {
+            fontSize: size === "sm" ? theme.fontSizes.sm : theme.fontSizes.md,
+            ...userStyles?.input,
+          },
+        };
+      }}
+      {...rest}
+    />
+  );
+});
 
 TextareaField.displayName = "TextareaField";

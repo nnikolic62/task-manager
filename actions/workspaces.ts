@@ -1,6 +1,8 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+
 import { db } from "@/db";
 import {
   jobs,
@@ -8,19 +10,18 @@ import {
   workspaceMembers,
   workspaces,
 } from "@/db/schema";
+import { getSession } from "@/lib/session";
+import { slugify, getAppBaseUrl } from "@/lib/utils";
 import {
   getWorkspaceMemberRole,
   hasPendingWorkspaceInvitation,
   isWorkspaceMemberEmail,
+  UserWorkspace,
 } from "@/lib/workspaces";
-import { getSession } from "@/lib/session";
-import { slugify, getAppBaseUrl } from "@/lib/utils";
 import {
   inviteWorkspaceMemberSchema,
   type InviteWorkspaceRole,
 } from "@/schemas/workspace.schema";
-import { UserWorkspace } from "@/lib/workspaces";
-import { eq } from "drizzle-orm";
 
 export type InviteWorkspaceMemberResult =
   | { ok: true }
@@ -114,7 +115,10 @@ export async function inviteWorkspaceMember(
   }
 
   if (await hasPendingWorkspaceInvitation(workspaceId, normalizedEmail)) {
-    return { ok: false, toast: "An invitation is already pending for this email" };
+    return {
+      ok: false,
+      toast: "An invitation is already pending for this email",
+    };
   }
 
   try {

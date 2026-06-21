@@ -1,5 +1,6 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/db";
@@ -7,11 +8,8 @@ import { projects } from "@/db/schema";
 import { parseDueDate } from "@/lib/dates";
 import { getSession } from "@/lib/session";
 import { slugify } from "@/lib/utils";
-import { eq } from "drizzle-orm";
 
-export type CreateProjectResult =
-  | { ok: true }
-  | { ok: false; toast?: string };
+export type CreateProjectResult = { ok: true } | { ok: false; toast?: string };
 
 export async function createProject(
   workspaceId: string,
@@ -70,5 +68,3 @@ export async function createProject(
 
   return { ok: true };
 }
-
-

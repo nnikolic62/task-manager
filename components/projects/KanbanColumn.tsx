@@ -2,12 +2,11 @@
 
 import { useDroppable } from "@dnd-kit/core";
 
+import { COLUMN_CONFIG } from "@/lib/kanban";
 import type { KanbanTask, TaskStatus } from "@/schemas/task.schema";
 
 import { CreateTaskDialog } from "./CreateTaskDialog";
-import { COLUMN_CONFIG } from "@/lib/kanban";
 import { TaskCard } from "./TaskCard";
-
 
 type KanbanColumnProps = {
   status: TaskStatus;
@@ -15,8 +14,6 @@ type KanbanColumnProps = {
   projectId: string;
   projectPath: string;
 };
-
-
 
 export function KanbanColumn({
   status,
@@ -40,7 +37,9 @@ export function KanbanColumn({
             className={`size-2 rounded-full ${config.dotClassName}`}
             aria-hidden
           />
-          <h2 className="text-sm font-medium text-foreground">{config.label}</h2>
+          <h2 className="text-sm font-medium text-foreground">
+            {config.label}
+          </h2>
         </div>
         <span className="flex size-6 items-center justify-center rounded-full bg-zinc-800 text-xs font-medium text-muted-foreground">
           {tasks.length}

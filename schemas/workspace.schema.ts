@@ -1,11 +1,6 @@
 import { z } from "zod";
 
-export const WORKSPACE_ROLES = [
-  "owner",
-  "admin",
-  "member",
-  "viewer",
-] as const;
+export const WORKSPACE_ROLES = ["owner", "admin", "member", "viewer"] as const;
 
 export const INVITE_WORKSPACE_ROLES = ["admin", "member", "viewer"] as const;
 

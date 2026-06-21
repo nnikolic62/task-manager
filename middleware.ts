@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+
 import { verifyAccessToken } from "@/lib/auth";
 
-const publicPaths = ["/login", "/register", "/api/auth/refresh", "/api/auth/google", "/api/telegram/webhook"];
+const publicPaths = [
+  "/login",
+  "/register",
+  "/api/auth/refresh",
+  "/api/auth/google",
+  "/api/telegram/webhook",
+];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some(
@@ -33,19 +40,13 @@ export async function middleware(request: NextRequest) {
 
   if (!isPublic && !hasValidAccess && hasRefresh) {
     const refreshUrl = new URL("/api/auth/refresh", request.url);
-    refreshUrl.searchParams.set(
-      "redirect",
-      `${pathname}${search}`,
-    );
+    refreshUrl.searchParams.set("redirect", `${pathname}${search}`);
     return NextResponse.redirect(refreshUrl);
   }
 
   if (!isPublic && !hasValidAccess) {
     const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set(
-      "redirect",
-      `${pathname}${search}`,
-    );
+    loginUrl.searchParams.set("redirect", `${pathname}${search}`);
     return NextResponse.redirect(loginUrl);
   }
 
