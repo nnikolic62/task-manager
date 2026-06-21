@@ -27,7 +27,7 @@ async function getOpenTaskCount(projectName: string) {
         .leftJoin(tasks, and(eq(projects.id, tasks.projectId), ne(tasks.status, 'done')))
         .where(eq(projects.name, projectName))
         .limit(1);
-    return result;  
+    return result;
 }
 
 export async function POST(request: NextRequest) {
@@ -36,15 +36,16 @@ export async function POST(request: NextRequest) {
     const text = update.message?.text;
     const chatId = update.message?.chat.id;
 
-    if(!text || !chatId) {
+    if (!text || !chatId) {
         return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
 
     const match = text.match(/^\/tasks\s+(.+)$/i);
 
-    if(!match) {
+    if (!match) {
         await sendMessage(chatId, 'Invalid project name. Please use /tasks <project name>');
-        return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+
+        return NextResponse.json({ success: true, message: 'Handled invalid command input' }, { status: 200 });
     }
 
     const projectName = match[1];
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
         await sendMessage(chatId, 'Error getting open task count. Please try again later.');
         return NextResponse.json({ error: 'Error getting open task count' }, { status: 500 });
     }
-    
+
     return NextResponse.json({ ok: true });
-    
+
 }
