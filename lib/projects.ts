@@ -1,4 +1,4 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, count, eq, ne, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { projects, tasks } from "@/db/schema";
@@ -38,4 +38,15 @@ export async function getProjectBySlug(workspaceId: string, slug: string) {
     .limit(1);
 
   return project;
+}
+
+export async function getOpenTaskCount(projectName: string) {
+  const [result] = await db
+    .select({
+      openTasks: count(tasks.id),
+    })
+    .from(projects)
+    .leftJoin(tasks, eq(projects.id, tasks.projectId))
+    .where(and(eq(projects.name, projectName), ne(tasks.status, "done")));
+  return result;
 }
