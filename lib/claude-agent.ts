@@ -1,6 +1,7 @@
 import { Anthropic } from "@anthropic-ai/sdk";
 
 import { getOpenTaskCount } from "./projects";
+import { getTasksByProjectName } from "./tasks";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -26,10 +27,12 @@ const tools = [
       type: "object" as const,
       properties: {
         projectName: { type: "string" },
-        status: { type: "string", enum: ["todo", "in_progress", "done"] },
-        limit: { type: "number", default: 10 },
+        status: {
+          type: "string",
+          enum: ["todo", "in_progress", "done", "review"],
+        },
       },
-      required: ["projectName"],
+      required: ["projectName", "status"],
     },
   },
   // ... ostale operacije koje želiš da izložiš
@@ -40,6 +43,13 @@ async function executeTool(toolName: string, input: unknown) {
     case "get_open_task_count": {
       const { projectName } = input as { projectName: string };
       return await getOpenTaskCount(projectName);
+    }
+    case "list_tasks": {
+      const { projectName, status } = input as {
+        projectName: string;
+        status: string;
+      };
+      return await getTasksByProjectName(projectName, status);
     }
     default:
       throw new Error(`Tool ${toolName} not found`);

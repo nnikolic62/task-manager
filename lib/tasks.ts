@@ -1,8 +1,8 @@
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { tasks, users } from "@/db/schema";
-import type { KanbanTask } from "@/schemas/task.schema";
+import { projects, tasks, users } from "@/db/schema";
+import type { KanbanTask, TaskStatus } from "@/schemas/task.schema";
 
 export async function getTasksByProjectId(
   projectId: string,
@@ -25,6 +25,30 @@ export async function getTasksByProjectId(
     .from(tasks)
     .leftJoin(users, eq(tasks.assigneeId, users.id))
     .where(eq(tasks.projectId, projectId))
+    .orderBy(asc(tasks.position));
+
+  return rows;
+}
+
+export async function getTasksByProjectName(
+  projectName: string,
+  status: string,
+) {
+  const rows = await db
+    .select({
+      id: tasks.id,
+      projectId: tasks.projectId,
+      title: tasks.title,
+      description: tasks.description,
+    })
+    .from(tasks)
+    .leftJoin(projects, eq(tasks.projectId, projects.id))
+    .where(
+      and(
+        eq(projects.name, projectName),
+        eq(tasks.status, status as TaskStatus),
+      ),
+    )
     .orderBy(asc(tasks.position));
 
   return rows;
