@@ -2,9 +2,14 @@ import { cookies } from "next/headers";
 
 const isProduction = process.env.NODE_ENV === "production";
 
+const secureCookies =
+  process.env.COOKIE_SECURE !== undefined
+    ? process.env.COOKIE_SECURE === "true"
+    : isProduction;
+
 const cookieOptions = {
   httpOnly: true,
-  secure: isProduction,
+  secure: secureCookies,
   sameSite: "lax" as const,
   path: "/",
 };
